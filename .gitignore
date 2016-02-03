@@ -2,3 +2,5 @@ nbproject/*
 lib/nblibraries.properties
 build.xml
 manifest.mf
+/build/
+informe.xml
