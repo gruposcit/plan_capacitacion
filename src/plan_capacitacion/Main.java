@@ -6,6 +6,11 @@
 
 package plan_capacitacion;
 
+import com.gruposcit.plancapacitacion.gui.Principal;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
 /**
  *
  * @author leofavio_ar
@@ -16,7 +21,20 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                try {
+                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                    new Principal();
+                } catch (UnsupportedLookAndFeelException e) {
+                    System.err.println(e.getMessage());
+                    new Principal();
+                } catch (Exception ex) {
+                    System.err.println(ex.getMessage());
+                    new Principal();
+                }
+            }
+        });
     }
 
 }
