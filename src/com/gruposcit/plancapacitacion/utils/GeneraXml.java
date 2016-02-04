@@ -5,10 +5,8 @@
  */
 package com.gruposcit.plancapacitacion.utils;
 
-import java.awt.List;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -26,9 +24,6 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.bootstrap.DOMImplementationRegistry;
-import org.w3c.dom.ls.DOMImplementationLS;
-import org.w3c.dom.ls.LSSerializer;
 
 /**
  *
@@ -170,7 +165,7 @@ public class GeneraXml {
      
      
     Source source = new DOMSource(document);
-    Result result = new StreamResult(new java.io.File(nom_arch+".xml"));
+    Result result = new StreamResult(new java.io.File(nom_arch));
     Transformer transformer = TransformerFactory.newInstance().newTransformer();
     transformer.setOutputProperty(OutputKeys.INDENT, "yes");
     transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
