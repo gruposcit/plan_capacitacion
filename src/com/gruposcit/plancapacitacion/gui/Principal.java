@@ -259,6 +259,7 @@ public class Principal extends javax.swing.JFrame {
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setLayout(new java.awt.BorderLayout());
 
+        jSplitPane1.setBorder(null);
         jSplitPane1.setDividerLocation(150);
         jSplitPane1.setDividerSize(0);
 
@@ -285,7 +286,7 @@ public class Principal extends javax.swing.JFrame {
 
         btnListado.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         btnListado.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/lista.png"))); // NOI18N
-        btnListado.setText("Anterior");
+        btnListado.setText("Año anterior");
         btnListado.setFocusable(false);
         btnListado.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnListado.setMaximumSize(new java.awt.Dimension(150, 70));
@@ -301,7 +302,7 @@ public class Principal extends javax.swing.JFrame {
 
         btnListado1.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         btnListado1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/lista.png"))); // NOI18N
-        btnListado1.setText("Actual");
+        btnListado1.setText("Año actual");
         btnListado1.setFocusable(false);
         btnListado1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnListado1.setMaximumSize(new java.awt.Dimension(150, 70));
@@ -580,7 +581,7 @@ public class Principal extends javax.swing.JFrame {
                 .addComponent(jLabel12)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton3)
-                .addContainerGap(42, Short.MAX_VALUE))
+                .addContainerGap(44, Short.MAX_VALUE))
         );
 
         contenedor.addTab("nuevo", jPanel3);
@@ -608,7 +609,7 @@ public class Principal extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 707, Short.MAX_VALUE))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 709, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -617,7 +618,7 @@ public class Principal extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 490, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 492, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -646,7 +647,7 @@ public class Principal extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 707, Short.MAX_VALUE))
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 709, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
@@ -655,7 +656,7 @@ public class Principal extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 490, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 492, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -704,7 +705,7 @@ public class Principal extends javax.swing.JFrame {
                         .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel6Layout.createSequentialGroup()
                                 .addComponent(ycPeriodo, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 491, Short.MAX_VALUE))
+                                .addGap(0, 493, Short.MAX_VALUE))
                             .addComponent(txtSujeto, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
@@ -723,7 +724,7 @@ public class Principal extends javax.swing.JFrame {
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(ycPeriodo, javax.swing.GroupLayout.DEFAULT_SIZE, 22, Short.MAX_VALUE)
                     .addComponent(jLabel22, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(445, Short.MAX_VALUE))
+                .addContainerGap(447, Short.MAX_VALUE))
         );
 
         contenedor.addTab("generales", jPanel6);
@@ -732,7 +733,6 @@ public class Principal extends javax.swing.JFrame {
 
         jPanel1.add(jSplitPane1, java.awt.BorderLayout.CENTER);
 
-        jToolBar1.setBackground(new java.awt.Color(255, 255, 255));
         jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
 
@@ -845,7 +845,7 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_rbActualItemStateChanged
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
+        this.dispose();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     /**

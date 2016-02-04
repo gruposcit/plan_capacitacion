@@ -48,6 +48,9 @@
       <SubComponents>
         <Container class="javax.swing.JSplitPane" name="jSplitPane1">
           <Properties>
+            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+              <Border info="null"/>
+            </Property>
             <Property name="dividerLocation" type="int" value="150"/>
             <Property name="dividerSize" type="int" value="0"/>
           </Properties>
@@ -108,7 +111,7 @@
                     <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                       <Image iconType="3" name="/img/lista.png"/>
                     </Property>
-                    <Property name="text" type="java.lang.String" value="Anterior"/>
+                    <Property name="text" type="java.lang.String" value="A&#xf1;o anterior"/>
                     <Property name="focusable" type="boolean" value="false"/>
                     <Property name="horizontalTextPosition" type="int" value="0"/>
                     <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
@@ -132,7 +135,7 @@
                     <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                       <Image iconType="3" name="/img/lista.png"/>
                     </Property>
-                    <Property name="text" type="java.lang.String" value="Actual"/>
+                    <Property name="text" type="java.lang.String" value="A&#xf1;o actual"/>
                     <Property name="focusable" type="boolean" value="false"/>
                     <Property name="horizontalTextPosition" type="int" value="0"/>
                     <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
@@ -309,7 +312,7 @@
                               <Component id="jLabel12" min="-2" max="-2" attributes="0"/>
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Component id="jButton3" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="42" max="32767" attributes="0"/>
+                              <EmptySpace pref="44" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -669,7 +672,7 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Component id="jLabel1" alignment="0" max="32767" attributes="0"/>
-                                  <Component id="jScrollPane2" alignment="0" pref="707" max="32767" attributes="0"/>
+                                  <Component id="jScrollPane2" alignment="0" pref="709" max="32767" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
@@ -681,7 +684,7 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jScrollPane2" pref="490" max="32767" attributes="0"/>
+                              <Component id="jScrollPane2" pref="492" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -735,7 +738,7 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Component id="jLabel2" alignment="0" max="32767" attributes="0"/>
-                                  <Component id="jScrollPane3" alignment="0" pref="707" max="32767" attributes="0"/>
+                                  <Component id="jScrollPane3" alignment="0" pref="709" max="32767" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
@@ -747,7 +750,7 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jScrollPane3" pref="490" max="32767" attributes="0"/>
+                              <Component id="jScrollPane3" pref="492" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -814,7 +817,7 @@
                                       <Group type="103" groupAlignment="0" attributes="0">
                                           <Group type="102" attributes="0">
                                               <Component id="ycPeriodo" min="-2" pref="88" max="-2" attributes="0"/>
-                                              <EmptySpace min="0" pref="491" max="32767" attributes="0"/>
+                                              <EmptySpace min="0" pref="493" max="32767" attributes="0"/>
                                           </Group>
                                           <Component id="txtSujeto" max="32767" attributes="0"/>
                                       </Group>
@@ -842,7 +845,7 @@
                                   <Component id="ycPeriodo" alignment="0" pref="22" max="32767" attributes="0"/>
                                   <Component id="jLabel22" alignment="0" max="32767" attributes="0"/>
                               </Group>
-                              <EmptySpace pref="445" max="32767" attributes="0"/>
+                              <EmptySpace pref="447" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -908,9 +911,6 @@
         </Container>
         <Container class="javax.swing.JToolBar" name="jToolBar1">
           <Properties>
-            <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-              <Color blue="ff" green="ff" red="ff" type="rgb"/>
-            </Property>
             <Property name="floatable" type="boolean" value="false"/>
             <Property name="rollover" type="boolean" value="true"/>
           </Properties>
