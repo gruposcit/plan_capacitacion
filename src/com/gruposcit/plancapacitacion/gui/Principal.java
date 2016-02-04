@@ -183,11 +183,9 @@ public class Principal extends javax.swing.JFrame {
                         String.valueOf(ycPeriodo.getYear()), 
                         (ArrayList<Map>)actual.getDataProvider(), 
                         (ArrayList<Map>)anterior.getDataProvider());
-            } catch (IOException ex) {
-                Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (ParserConfigurationException ex) {
-                Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (TransformerException ex) {
+                FlDialog.showFullInformationDialog("Se ha exportado correctamente el archivo.");
+            } catch (IOException | ParserConfigurationException | TransformerException ex) {
+                FlDialog.showFullErrorDialog("Ha ocurrido un error al exportar el archivo.");
                 Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
@@ -248,6 +246,11 @@ public class Principal extends javax.swing.JFrame {
         btnActual.setSelected(false);
         btnAgregar.setSelected(false);
         btnGenerales.setSelected(true);
+    }
+    private void limpiarInformacion() {
+        limpiar();
+        inicializarActual();
+        inicializarAnterior();
     }
 
     /** This method is called from within the constructor to
@@ -311,6 +314,7 @@ public class Principal extends javax.swing.JFrame {
         ycPeriodo = new com.toedter.calendar.JYearChooser();
         jToolBar1 = new javax.swing.JToolBar();
         jButton1 = new javax.swing.JButton();
+        jButton5 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JToolBar.Separator();
         jButton2 = new javax.swing.JButton();
@@ -803,6 +807,20 @@ public class Principal extends javax.swing.JFrame {
         });
         jToolBar1.add(jButton1);
 
+        jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/exportar.png"))); // NOI18N
+        jButton5.setText("Limpiar información");
+        jButton5.setFocusable(false);
+        jButton5.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton5.setMaximumSize(new java.awt.Dimension(120, 41));
+        jButton5.setOpaque(false);
+        jButton5.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(jButton5);
+
         jButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/informacion.png"))); // NOI18N
         jButton4.setText("Acerca de...");
         jButton4.setFocusable(false);
@@ -912,6 +930,10 @@ public class Principal extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_rbActualItemStateChanged
 
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        limpiarInformacion();
+    }//GEN-LAST:event_jButton5ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -964,6 +986,7 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;

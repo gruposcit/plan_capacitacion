@@ -4,6 +4,12 @@
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="2"/>
     <Property name="title" type="java.lang.String" value="Acerca de..."/>
+    <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+      <Dimension value="[326, 366]"/>
+    </Property>
+    <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+      <Dimension value="[326, 366]"/>
+    </Property>
     <Property name="resizable" type="boolean" value="false"/>
   </Properties>
   <SyntheticProperties>
@@ -47,6 +53,7 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Component id="jLabel1" alignment="0" pref="326" max="32767" attributes="0"/>
               <Component id="jLabel2" alignment="1" pref="0" max="32767" attributes="0"/>
+              <Component id="jLabel3" alignment="1" pref="0" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
@@ -54,8 +61,10 @@
               <Group type="102" alignment="0" attributes="0">
                   <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
+                  <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace min="0" pref="11" max="32767" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -80,6 +89,20 @@
               <Color blue="99" green="99" red="0" type="rgb"/>
             </Property>
             <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;p style=&apos;text-align:justify&apos;&gt;&amp;copy; 2016 Todos los derechos reservados. Servicios de Consultor&#xed;a Inform&#xe1;tica y Telecomunicaciones.&lt;/p&gt;&lt;/html&gt;"/>
+            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+              <Border info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">
+                <EmptyBorder bottom="5" left="5" right="5" top="5"/>
+              </Border>
+            </Property>
+            <Property name="opaque" type="boolean" value="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel3">
+          <Properties>
+            <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="ff" green="ff" red="ff" type="rgb"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;p style=&apos;text-align:justify&apos;&gt;La herramienta est&#xe1; dise&#xf1;ada para cumplir con lo requerido en el &lt;b&gt;Acuerdo por el que se expide el formato oficial para el informe de cursos de capacitaci&#xf3;n en materia de Prevenci&#xf3;n y Detecci&#xf3;n de Operaciones con Recursos de Procedencia Il&#xed;cita y Financiamiento al Terrorismo&lt;/b&gt; publicado en el Diario Oficial de la Federaci&#xf3;n el d&#xed;a 7 de Enero de 2016, as&#xed; como el Aviso emitido por la Comisi&#xf3;n Nacional Bancaria y de Valores en el portal &lt;b&gt;SITI PLD&lt;/b&gt;.&lt;/p&gt;&lt;/html&gt;"/>
             <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
               <Border info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">
                 <EmptyBorder bottom="5" left="5" right="5" top="5"/>
