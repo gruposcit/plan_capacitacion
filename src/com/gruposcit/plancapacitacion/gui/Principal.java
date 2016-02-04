@@ -11,18 +11,16 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.ItemEvent;
 import java.awt.event.KeyEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.AbstractButton;
-import javax.swing.ButtonModel;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
-import javax.swing.event.ChangeEvent;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -64,6 +62,16 @@ public class Principal extends javax.swing.JFrame {
             @Override
             protected void paintContentBorder(Graphics g, int tabPlacement, int selectedIndex) {
                 
+            }
+        });
+        ycPeriodo.addPropertyChangeListener("year", new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                if (rbActual.isSelected()) {
+                    controlOpciones(Principal.ACTUAL);
+                } else if (rbAnterior.isSelected()) {
+                    controlOpciones(Principal.ANTERIOR);
+                }
             }
         });
         btnAgregarHandler();
