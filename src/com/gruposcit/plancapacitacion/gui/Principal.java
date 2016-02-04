@@ -15,6 +15,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -74,6 +75,8 @@ public class Principal extends javax.swing.JFrame {
                 }
             }
         });
+        ycPeriodo.setYear(Calendar.getInstance().get(Calendar.YEAR) - 1);
+        rbAnterior.setSelected(true);
         btnAgregarHandler();
         llenarAreas();
         limpiar();
@@ -111,6 +114,10 @@ public class Principal extends javax.swing.JFrame {
         cbTipo.setDataProvider(al, "valor");
     }
     private void agregar() {
+        if (txtNombre.getText().trim().equals("")) {
+            FlDialog.showFullWarningDialog("Escriba el nombre de la capacitación...");
+            return;
+        }
         if (cbMesInicio.getSelectedIndex() == 0) {
             FlDialog.showFullWarningDialog("Debe seleccionar un mes de inicio...");
             return;
@@ -121,10 +128,6 @@ public class Principal extends javax.swing.JFrame {
         }
         if (liAreas.getModel().getSize() == 0) {
             FlDialog.showFullWarningDialog("Debe agregar por lo menos un área capacitada...");
-            return;
-        }
-        if (txtNombre.getText().trim().equals("")) {
-            FlDialog.showFullWarningDialog("Escriba el nombre de la capacitación...");
             return;
         }
         if (rbAnterior.isSelected() && txtDocumento.getText().trim().equals("")) {
@@ -145,7 +148,7 @@ public class Principal extends javax.swing.JFrame {
                 new EasyEntry("nombre", txtNombre.getText().trim()),
                 new EasyEntry("feini", String.format("%s-%02d", String.valueOf(ycAnoInicio.getYear()), cbMesInicio.getSelectedIndex())),
                 new EasyEntry("fefin", String.format("%s-%02d", String.valueOf(ycAnoFin.getYear()), cbMesFin.getSelectedIndex())),
-                new EasyEntry("areas", liAreas.getModel().getSize() > 1 ? join(((DefaultListModel)liAreas.getModel()).toArray(), ",") : ""),
+                new EasyEntry("areas", join(((DefaultListModel)liAreas.getModel()).toArray(), ",")),
                 new EasyEntry("num_per", txtPersonas.getText().trim())
         ));
     }
@@ -155,7 +158,7 @@ public class Principal extends javax.swing.JFrame {
                 new EasyEntry("nombre", txtNombre.getText().trim()),
                 new EasyEntry("feini", String.format("%s-%02d", String.valueOf(ycAnoInicio.getYear()), cbMesInicio.getSelectedIndex())),
                 new EasyEntry("fefin", String.format("%s-%02d", String.valueOf(ycAnoFin.getYear()), cbMesFin.getSelectedIndex())),
-                new EasyEntry("areas", liAreas.getModel().getSize() > 1 ? join(((DefaultListModel)liAreas.getModel()).toArray(), ",") : ""),
+                new EasyEntry("areas", join(((DefaultListModel)liAreas.getModel()).toArray(), ",")),
                 new EasyEntry("num_per", txtPersonas.getText().trim()),
                 new EasyEntry("documento", txtDocumento.getText().trim())
         ));
@@ -165,8 +168,6 @@ public class Principal extends javax.swing.JFrame {
         txtNombre.setText("");
         cbMesInicio.setSelectedIndex(0);
         cbMesFin.setSelectedIndex(0);
-//        ycPeriodo.setYear(Calendar.getInstance().get(Calendar.YEAR) - 1);
-        rbAnterior.setSelected(true);
         txtAreas.setText("");
         ((DefaultListModel)liAreas.getModel()).removeAllElements();
         txtPersonas.setText("1");
@@ -661,7 +662,7 @@ public class Principal extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 709, Short.MAX_VALUE))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 711, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -699,7 +700,7 @@ public class Principal extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 709, Short.MAX_VALUE))
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 711, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
@@ -757,7 +758,7 @@ public class Principal extends javax.swing.JFrame {
                         .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel6Layout.createSequentialGroup()
                                 .addComponent(ycPeriodo, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 493, Short.MAX_VALUE))
+                                .addGap(0, 495, Short.MAX_VALUE))
                             .addComponent(txtSujeto, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
@@ -898,7 +899,7 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_rbAnteriorItemStateChanged
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        this.dispose();
+        System.exit(0);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed

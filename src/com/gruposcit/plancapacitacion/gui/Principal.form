@@ -672,7 +672,7 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Component id="jLabel1" alignment="0" max="32767" attributes="0"/>
-                                  <Component id="jScrollPane2" alignment="0" pref="709" max="32767" attributes="0"/>
+                                  <Component id="jScrollPane2" alignment="0" pref="711" max="32767" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
@@ -738,7 +738,7 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Component id="jLabel2" alignment="0" max="32767" attributes="0"/>
-                                  <Component id="jScrollPane3" alignment="0" pref="709" max="32767" attributes="0"/>
+                                  <Component id="jScrollPane3" alignment="0" pref="711" max="32767" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
@@ -817,7 +817,7 @@
                                       <Group type="103" groupAlignment="0" attributes="0">
                                           <Group type="102" attributes="0">
                                               <Component id="ycPeriodo" min="-2" pref="88" max="-2" attributes="0"/>
-                                              <EmptySpace min="0" pref="493" max="32767" attributes="0"/>
+                                              <EmptySpace min="0" pref="495" max="32767" attributes="0"/>
                                           </Group>
                                           <Component id="txtSujeto" max="32767" attributes="0"/>
                                       </Group>
