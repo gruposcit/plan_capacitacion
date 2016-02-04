@@ -7,6 +7,8 @@
 package com.gruposcit.plancapacitacion.gui;
 
 import com.gruposcit.plancapacitacion.utils.GeneraXml;
+import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -14,6 +16,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
+import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import org.aguilar.swinglib.utils.EasyEntry;
@@ -34,6 +37,20 @@ public class Principal extends javax.swing.JFrame {
         inicializarActual();
         inicializarAnterior();
         limpiar();
+        contenedor.setUI(new BasicTabbedPaneUI() {
+            @Override
+            protected int calculateTabAreaHeight(int tabPlacement, int horizRunCount, int maxTabHeight) {
+                return 0;
+            }
+            @Override
+            protected void paintTab(Graphics g, int tabPlacement, Rectangle[] rects, int tabIndex, Rectangle iconRect, Rectangle textRect) {
+                
+            }
+            @Override
+            protected void paintContentBorder(Graphics g, int tabPlacement, int selectedIndex) {
+                
+            }
+        });
         this.setLocationRelativeTo(null);
         this.setVisible(true);
     }
@@ -124,7 +141,7 @@ public class Principal extends javax.swing.JFrame {
     private void exportar() {
         if (jfc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
             try {
-                GeneraXml xml = new GeneraXml(
+                new GeneraXml(
                         jfc.getSelectedFile().getCanonicalPath(), 
                         txtOrgano.getText().trim(), 
                         txtSujeto.getText().trim(), 
@@ -236,7 +253,7 @@ public class Principal extends javax.swing.JFrame {
         });
         jToolBar2.add(btnListado1);
 
-        btnNuevo.setText("Nuevo");
+        btnNuevo.setText("Agregar registro");
         btnNuevo.setFocusable(false);
         btnNuevo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnNuevo.setMaximumSize(new java.awt.Dimension(150, 50));
