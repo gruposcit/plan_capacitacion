@@ -8,14 +8,21 @@ package com.gruposcit.plancapacitacion.gui;
 
 import com.gruposcit.plancapacitacion.utils.GeneraXml;
 import java.awt.Graphics;
+import java.awt.List;
 import java.awt.Rectangle;
+import java.awt.event.ItemEvent;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.AbstractButton;
+import javax.swing.ButtonModel;
+import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
+import javax.swing.event.ChangeEvent;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -29,14 +36,15 @@ import org.aguilar.swinglib.utils.EasyMap;
 public class Principal extends javax.swing.JFrame {
 
     private JFileChooser jfc = new JFileChooser(System.getProperty("user.home"));
+    private static final int ACTUAL = 0;
+    private static final int ANTERIOR = 1;
     
-    /** Creates new form Principal2 */
+    /** Creates new form Principal */
     public Principal() {
         initComponents();
         llenarTipos();
         inicializarActual();
         inicializarAnterior();
-        limpiar();
         contenedor.setUI(new BasicTabbedPaneUI() {
             @Override
             protected int calculateTabAreaHeight(int tabPlacement, int horizRunCount, int maxTabHeight) {
@@ -51,8 +59,13 @@ public class Principal extends javax.swing.JFrame {
                 
             }
         });
+        llenarAreas();
+        limpiar();
         this.setLocationRelativeTo(null);
         this.setVisible(true);
+    }
+    private void llenarAreas() {
+        liAreas.setModel(new DefaultListModel());
     }
     private void inicializarActual() {
         actual.setDataProvider(
@@ -109,9 +122,9 @@ public class Principal extends javax.swing.JFrame {
         actual.addRow(EasyMap.crearMap(
                 new EasyEntry("tipo", cbTipo.getSelectedMap().get("id").toString()),
                 new EasyEntry("nombre", txtNombre.getText().trim()),
-                new EasyEntry("feini", String.format("%02d-%s", cbMesInicio.getSelectedIndex(), String.valueOf(ycAnoInicio.getYear()))),
-                new EasyEntry("fefin", String.format("%02d-%s", cbMesFin.getSelectedIndex(), String.valueOf(ycAnoFin.getYear()))),
-                new EasyEntry("areas", txtAreas.getText().trim()),
+                new EasyEntry("feini", String.format("%s-%02d", String.valueOf(ycAnoInicio.getYear()), cbMesInicio.getSelectedIndex())),
+                new EasyEntry("fefin", String.format("%s-%02d", String.valueOf(ycAnoFin.getYear()), cbMesFin.getSelectedIndex())),
+                new EasyEntry("areas", join(((DefaultListModel)liAreas.getModel()).toArray(), ",")),
                 new EasyEntry("num_per", txtPersonas.getText().trim())
         ));
     }
@@ -121,20 +134,20 @@ public class Principal extends javax.swing.JFrame {
                 new EasyEntry("nombre", txtNombre.getText().trim()),
                 new EasyEntry("feini", String.format("%02d-%s", cbMesInicio.getSelectedIndex(), String.valueOf(ycAnoInicio.getYear()))),
                 new EasyEntry("fefin", String.format("%02d-%s", cbMesFin.getSelectedIndex(), String.valueOf(ycAnoFin.getYear()))),
-                new EasyEntry("areas", txtAreas.getText().trim()),
+                new EasyEntry("areas", join(((DefaultListModel)liAreas.getModel()).toArray(), ",")),
                 new EasyEntry("num_per", txtPersonas.getText().trim()),
                 new EasyEntry("documento", txtDocumento.getText().trim())
         ));
     }
     private void limpiar() {
-        rbAnterior.setSelected(true);
         cbTipo.setSelectedIndex(0);
         txtNombre.setText("");
         cbMesInicio.setSelectedIndex(0);
-        ycAnoInicio.setYear(Calendar.getInstance().get(Calendar.YEAR));
         cbMesFin.setSelectedIndex(0);
-        ycAnoFin.setYear(Calendar.getInstance().get(Calendar.YEAR));
+        ycPeriodo.setYear(Calendar.getInstance().get(Calendar.YEAR) - 1);
+        rbAnterior.setSelected(true);
         txtAreas.setText("");
+        ((DefaultListModel)liAreas.getModel()).removeAllElements();
         txtPersonas.setText("1");
         txtDocumento.setText("");
     }
@@ -156,6 +169,37 @@ public class Principal extends javax.swing.JFrame {
                 Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+    }
+    private void agregarArea() {
+        ((DefaultListModel)liAreas.getModel()).addElement(txtAreas.getText().trim());
+    }
+    private void eliminarArea() {
+        ((DefaultListModel)liAreas.getModel()).removeElementAt(liAreas.getSelectedIndex());
+    }
+    private String join(Object[] lista, String separador) {
+        StringBuilder b = new StringBuilder();
+        for(Object obj: lista) { 
+            b.append(separador).append(obj.toString());
+        }
+        return b.toString().substring(separador.length());
+    }
+    private void controlOpciones(int opcion) {
+//        stateChanged(evt);
+        switch (opcion) {
+            case Principal.ACTUAL:
+                ycAnoInicio.setYear(ycPeriodo.getYear());
+                ycAnoFin.setYear(ycPeriodo.getYear());
+                break;
+            case Principal.ANTERIOR:
+                ycAnoInicio.setYear(ycPeriodo.getYear() + 1);
+                ycAnoFin.setYear(ycPeriodo.getYear() + 1);
+                break;
+        }
+    }
+    private boolean stateChanged(ChangeEvent changeEvent) {
+        AbstractButton aButton = (AbstractButton)changeEvent.getSource();
+        ButtonModel aModel = aButton.getModel();
+        return aModel.isSelected();
     }
 
     /** This method is called from within the constructor to
@@ -205,6 +249,11 @@ public class Principal extends javax.swing.JFrame {
         jPanel5 = new javax.swing.JPanel();
         rbAnterior = new javax.swing.JRadioButton();
         rbActual = new javax.swing.JRadioButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        liAreas = new javax.swing.JList<>();
+        jLabel10 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
         jPanel6 = new javax.swing.JPanel();
         jLabel20 = new javax.swing.JLabel();
         txtOrgano = new org.aguilar.swinglib.swing.fl.FlStringField();
@@ -394,6 +443,11 @@ public class Principal extends javax.swing.JFrame {
 
         txtAreas.setUpperCase(true);
         txtAreas.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        txtAreas.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtAreasKeyReleased(evt);
+            }
+        });
 
         txtDocumento.setUpperCase(true);
         txtDocumento.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
@@ -426,11 +480,26 @@ public class Principal extends javax.swing.JFrame {
         rbAnterior.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         rbAnterior.setText("Año anterior");
         rbAnterior.setOpaque(false);
+        rbAnterior.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                rbAnteriorItemStateChanged(evt);
+            }
+        });
+        rbAnterior.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                rbAnteriorStateChanged(evt);
+            }
+        });
 
         bgTipo.add(rbActual);
         rbActual.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         rbActual.setText("Año actual");
         rbActual.setOpaque(false);
+        rbActual.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                rbActualItemStateChanged(evt);
+            }
+        });
         rbActual.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 rbActualStateChanged(evt);
@@ -455,41 +524,81 @@ public class Principal extends javax.swing.JFrame {
                 .addComponent(rbActual))
         );
 
+        liAreas.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        liAreas.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                liAreasKeyReleased(evt);
+            }
+        });
+        jScrollPane1.setViewportView(liAreas);
+
+        jLabel10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/add.png"))); // NOI18N
+        jLabel10.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel10.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel10MouseClicked(evt);
+            }
+        });
+
+        jLabel11.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLabel11.setForeground(new java.awt.Color(0, 51, 255));
+        jLabel11.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        jLabel11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/delete.png"))); // NOI18N
+        jLabel11.setText("<html><u>Eliminar seleccionado</u></html>");
+        jLabel11.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel11.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel11MouseClicked(evt);
+            }
+        });
+
+        jLabel12.setForeground(new java.awt.Color(204, 0, 51));
+        jLabel12.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        jLabel12.setText("Sólo aplica para reportar capacitaciones del año anterior");
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jButton3)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(jPanel3Layout.createSequentialGroup()
                             .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(cbTipo, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 298, Short.MAX_VALUE)
+                                .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(jButton3)
+                                .addComponent(cbTipo, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(txtNombre, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(txtAreas, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(txtDocumento, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(txtPersonas, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
                                     .addComponent(cbMesInicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(ycAnoInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
-                                .addComponent(cbMesFin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(ycAnoFin, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(272, Short.MAX_VALUE))
+                                    .addComponent(ycAnoInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
+                                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(jPanel3Layout.createSequentialGroup()
+                                            .addComponent(cbMesFin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                            .addComponent(ycAnoFin, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addGap(0, 0, Short.MAX_VALUE))
+                                        .addComponent(txtAreas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(jLabel10))
+                                .addComponent(jLabel12, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 274, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(298, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -518,8 +627,13 @@ public class Principal extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
-                    .addComponent(txtAreas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(txtAreas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel8)
                     .addComponent(txtPersonas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -527,9 +641,11 @@ public class Principal extends javax.swing.JFrame {
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel9)
                     .addComponent(txtDocumento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel12)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton3)
-                .addContainerGap(242, Short.MAX_VALUE))
+                .addContainerGap(64, Short.MAX_VALUE))
         );
 
         contenedor.addTab("nuevo", jPanel3);
@@ -552,7 +668,7 @@ public class Principal extends javax.swing.JFrame {
 
         jLabel22.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel22.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
-        jLabel22.setText("Periodo informado:");
+        jLabel22.setText("Período informado:");
 
         ycPeriodo.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
@@ -651,7 +767,7 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void rbActualStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_rbActualStateChanged
-        
+//        controlOpciones(evt, Principal.ACTUAL);
     }//GEN-LAST:event_rbActualStateChanged
 
     private void btnNuevo1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevo1ActionPerformed
@@ -661,6 +777,42 @@ public class Principal extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         exportar();
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jLabel10MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel10MouseClicked
+        agregarArea();
+    }//GEN-LAST:event_jLabel10MouseClicked
+
+    private void txtAreasKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtAreasKeyReleased
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            agregarArea();
+        }
+    }//GEN-LAST:event_txtAreasKeyReleased
+
+    private void liAreasKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_liAreasKeyReleased
+        if (evt.getKeyCode() == KeyEvent.VK_DELETE) {
+            eliminarArea();
+        }
+    }//GEN-LAST:event_liAreasKeyReleased
+
+    private void jLabel11MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel11MouseClicked
+        eliminarArea();
+    }//GEN-LAST:event_jLabel11MouseClicked
+
+    private void rbAnteriorStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_rbAnteriorStateChanged
+//        controlOpciones(evt, Principal.ANTERIOR);
+    }//GEN-LAST:event_rbAnteriorStateChanged
+
+    private void rbAnteriorItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_rbAnteriorItemStateChanged
+        if (evt.getStateChange() == ItemEvent.SELECTED) {
+            controlOpciones(Principal.ANTERIOR);
+        }
+    }//GEN-LAST:event_rbAnteriorItemStateChanged
+
+    private void rbActualItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_rbActualItemStateChanged
+        if (evt.getStateChange() == ItemEvent.SELECTED) {
+            controlOpciones(Principal.ACTUAL);
+        }
+    }//GEN-LAST:event_rbActualItemStateChanged
 
     /**
      * @param args the command line arguments
@@ -713,6 +865,9 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel21;
@@ -730,11 +885,13 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JToolBar jToolBar2;
+    private javax.swing.JList<String> liAreas;
     private javax.swing.JRadioButton rbActual;
     private javax.swing.JRadioButton rbAnterior;
     private org.aguilar.swinglib.swing.fl.FlStringField txtAreas;
