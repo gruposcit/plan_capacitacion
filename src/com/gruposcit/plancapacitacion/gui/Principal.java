@@ -66,6 +66,7 @@ public class Principal extends javax.swing.JFrame {
                 
             }
         });
+        btnAgregarHandler();
         llenarAreas();
         limpiar();
         this.setLocationRelativeTo(null);
