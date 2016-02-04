@@ -807,7 +807,7 @@ public class Principal extends javax.swing.JFrame {
         });
         jToolBar1.add(jButton1);
 
-        jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/exportar.png"))); // NOI18N
+        jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/borrar.png"))); // NOI18N
         jButton5.setText("Limpiar información");
         jButton5.setFocusable(false);
         jButton5.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
