@@ -41,13 +41,13 @@ public class AcercaDe extends javax.swing.JDialog {
         setTitle("Acerca de...");
         setResizable(false);
 
-        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel1.setBackground(new java.awt.Color(77, 166, 166));
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/gruposcit.png"))); // NOI18N
 
-        jLabel2.setBackground(new java.awt.Color(0, 153, 102));
+        jLabel2.setBackground(new java.awt.Color(255, 255, 255));
         jLabel2.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel2.setForeground(new java.awt.Color(0, 153, 153));
         jLabel2.setText("<html><p style='text-align:justify'>&copy; 2016 Todos los derechos reservados. Servicios de Consultoría Informática y Telecomunicaciones.</p></html>");
         jLabel2.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
         jLabel2.setOpaque(true);

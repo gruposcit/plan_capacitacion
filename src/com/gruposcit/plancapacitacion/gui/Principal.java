@@ -26,6 +26,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+import org.aguilar.swinglib.swing.fl.dialogs.FlDialog;
+import org.aguilar.swinglib.swing.renderers.MultiLineCellRenderer;
 import org.aguilar.swinglib.utils.EasyEntry;
 import org.aguilar.swinglib.utils.EasyMap;
 import org.aguilar.swinglib.utils.MultipleFileFilter;
@@ -77,12 +79,14 @@ public class Principal extends javax.swing.JFrame {
                 new ArrayList<Map>(), 
                 new String[] {"tipo", "nombre", "feini", "fefin", "areas", "num_per"}, 
                 new String[] {"Tipo", "Nombre", "Fecha ini.", "Fecha fin.", "Áreas", "Núm. pers."});
+        actual.setColumnCellRenderer(new MultiLineCellRenderer(), new int[] {1, 4});
     }
     private void inicializarAnterior() {
         anterior.setDataProvider(
                 new ArrayList<Map>(), 
                 new String[] {"tipo", "nombre", "feini", "fefin", "areas", "num_per", "documento"}, 
                 new String[] {"Tipo", "Nombre", "Fecha ini.", "Fecha fin.", "Áreas", "Núm. pers.", "Documento"});
+        anterior.setColumnCellRenderer(new MultiLineCellRenderer(), new int[] {1, 4});
     }
     private void llenarTipos() {
         ArrayList<Map> al = new ArrayList<>();
@@ -98,11 +102,32 @@ public class Principal extends javax.swing.JFrame {
         cbTipo.setDataProvider(al, "valor");
     }
     private void agregar() {
+        if (cbMesInicio.getSelectedIndex() == 0) {
+            FlDialog.showFullWarningDialog("Debe seleccionar un mes de inicio...");
+            return;
+        }
+        if (cbMesFin.getSelectedIndex() == 0) {
+            FlDialog.showFullWarningDialog("Debe seleccionar un mes de finalización...");
+            return;
+        }
+        if (liAreas.getModel().getSize() == 0) {
+            FlDialog.showFullWarningDialog("Debe agregar por lo menos un área capacitada...");
+            return;
+        }
+        if (txtNombre.getText().trim().equals("")) {
+            FlDialog.showFullWarningDialog("Escriba el nombre de la capacitación...");
+            return;
+        }
+        if (rbAnterior.isSelected() && txtDocumento.getText().trim().equals("")) {
+            FlDialog.showFullWarningDialog("Escriba el nombre del documento emitido...");
+            return;
+        }
         if (rbActual.isSelected()) {
             agregarActual();
         } else if (rbAnterior.isSelected()) {
             agregarAnterior();
         }
+        FlDialog.showFullInformationDialog("Se ha agregado correctamente el registro.");
         limpiar();
     }
     private void agregarActual() {
@@ -111,7 +136,7 @@ public class Principal extends javax.swing.JFrame {
                 new EasyEntry("nombre", txtNombre.getText().trim()),
                 new EasyEntry("feini", String.format("%s-%02d", String.valueOf(ycAnoInicio.getYear()), cbMesInicio.getSelectedIndex())),
                 new EasyEntry("fefin", String.format("%s-%02d", String.valueOf(ycAnoFin.getYear()), cbMesFin.getSelectedIndex())),
-                new EasyEntry("areas", join(((DefaultListModel)liAreas.getModel()).toArray(), ",")),
+                new EasyEntry("areas", liAreas.getModel().getSize() > 1 ? join(((DefaultListModel)liAreas.getModel()).toArray(), ",") : ""),
                 new EasyEntry("num_per", txtPersonas.getText().trim())
         ));
     }
@@ -121,7 +146,7 @@ public class Principal extends javax.swing.JFrame {
                 new EasyEntry("nombre", txtNombre.getText().trim()),
                 new EasyEntry("feini", String.format("%s-%02d", String.valueOf(ycAnoInicio.getYear()), cbMesInicio.getSelectedIndex())),
                 new EasyEntry("fefin", String.format("%s-%02d", String.valueOf(ycAnoFin.getYear()), cbMesFin.getSelectedIndex())),
-                new EasyEntry("areas", join(((DefaultListModel)liAreas.getModel()).toArray(), ",")),
+                new EasyEntry("areas", liAreas.getModel().getSize() > 1 ? join(((DefaultListModel)liAreas.getModel()).toArray(), ",") : ""),
                 new EasyEntry("num_per", txtPersonas.getText().trim()),
                 new EasyEntry("documento", txtDocumento.getText().trim())
         ));
@@ -131,7 +156,7 @@ public class Principal extends javax.swing.JFrame {
         txtNombre.setText("");
         cbMesInicio.setSelectedIndex(0);
         cbMesFin.setSelectedIndex(0);
-        ycPeriodo.setYear(Calendar.getInstance().get(Calendar.YEAR) - 1);
+//        ycPeriodo.setYear(Calendar.getInstance().get(Calendar.YEAR) - 1);
         rbAnterior.setSelected(true);
         txtAreas.setText("");
         ((DefaultListModel)liAreas.getModel()).removeAllElements();
@@ -173,7 +198,6 @@ public class Principal extends javax.swing.JFrame {
         return b.toString().substring(separador.length());
     }
     private void controlOpciones(int opcion) {
-//        stateChanged(evt);
         switch (opcion) {
             case Principal.ACTUAL:
                 ycAnoInicio.setYear(ycPeriodo.getYear() + 1);
@@ -187,10 +211,33 @@ public class Principal extends javax.swing.JFrame {
                 break;
         }
     }
-    private boolean stateChanged(ChangeEvent changeEvent) {
-        AbstractButton aButton = (AbstractButton)changeEvent.getSource();
-        ButtonModel aModel = aButton.getModel();
-        return aModel.isSelected();
+    private void btnAnteriorHandler() {
+        contenedor.setSelectedIndex(1);
+        btnAnterior.setSelected(true);
+        btnActual.setSelected(false);
+        btnAgregar.setSelected(false);
+        btnGenerales.setSelected(false);
+    }
+    private void btnActualHandler() {
+        contenedor.setSelectedIndex(2);
+        btnAnterior.setSelected(false);
+        btnActual.setSelected(true);
+        btnAgregar.setSelected(false);
+        btnGenerales.setSelected(false);
+    }
+    private void btnAgregarHandler() {
+        contenedor.setSelectedIndex(0);
+        btnAnterior.setSelected(false);
+        btnActual.setSelected(false);
+        btnAgregar.setSelected(true);
+        btnGenerales.setSelected(false);
+    }
+    private void btnGeneralesHandler() {
+        contenedor.setSelectedIndex(3);
+        btnAnterior.setSelected(false);
+        btnActual.setSelected(false);
+        btnAgregar.setSelected(false);
+        btnGenerales.setSelected(true);
     }
 
     /** This method is called from within the constructor to
@@ -206,10 +253,10 @@ public class Principal extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jSplitPane1 = new javax.swing.JSplitPane();
         jToolBar2 = new javax.swing.JToolBar();
-        btnNuevo = new javax.swing.JButton();
-        btnListado = new javax.swing.JButton();
-        btnListado1 = new javax.swing.JButton();
-        btnNuevo1 = new javax.swing.JButton();
+        btnAgregar = new javax.swing.JButton();
+        btnAnterior = new javax.swing.JButton();
+        btnActual = new javax.swing.JButton();
+        btnGenerales = new javax.swing.JButton();
         contenedor = new javax.swing.JTabbedPane();
         jPanel3 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
@@ -254,8 +301,9 @@ public class Principal extends javax.swing.JFrame {
         ycPeriodo = new com.toedter.calendar.JYearChooser();
         jToolBar1 = new javax.swing.JToolBar();
         jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
+        jSeparator1 = new javax.swing.JToolBar.Separator();
+        jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -271,69 +319,69 @@ public class Principal extends javax.swing.JFrame {
         jToolBar2.setOrientation(javax.swing.SwingConstants.VERTICAL);
         jToolBar2.setRollover(true);
 
-        btnNuevo.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        btnNuevo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/agregar.png"))); // NOI18N
-        btnNuevo.setText("Agregar registro");
-        btnNuevo.setFocusable(false);
-        btnNuevo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnNuevo.setMaximumSize(new java.awt.Dimension(150, 70));
-        btnNuevo.setMinimumSize(new java.awt.Dimension(150, 0));
-        btnNuevo.setOpaque(false);
-        btnNuevo.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btnNuevo.addActionListener(new java.awt.event.ActionListener() {
+        btnAgregar.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        btnAgregar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/agregar.png"))); // NOI18N
+        btnAgregar.setText("Agregar registro");
+        btnAgregar.setFocusable(false);
+        btnAgregar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnAgregar.setMaximumSize(new java.awt.Dimension(150, 70));
+        btnAgregar.setMinimumSize(new java.awt.Dimension(150, 0));
+        btnAgregar.setOpaque(false);
+        btnAgregar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnAgregar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnNuevoActionPerformed(evt);
+                btnAgregarActionPerformed(evt);
             }
         });
-        jToolBar2.add(btnNuevo);
+        jToolBar2.add(btnAgregar);
 
-        btnListado.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        btnListado.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/lista.png"))); // NOI18N
-        btnListado.setText("Año anterior");
-        btnListado.setFocusable(false);
-        btnListado.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnListado.setMaximumSize(new java.awt.Dimension(150, 70));
-        btnListado.setMinimumSize(new java.awt.Dimension(150, 0));
-        btnListado.setOpaque(false);
-        btnListado.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btnListado.addActionListener(new java.awt.event.ActionListener() {
+        btnAnterior.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        btnAnterior.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/lista.png"))); // NOI18N
+        btnAnterior.setText("Año anterior");
+        btnAnterior.setFocusable(false);
+        btnAnterior.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnAnterior.setMaximumSize(new java.awt.Dimension(150, 70));
+        btnAnterior.setMinimumSize(new java.awt.Dimension(150, 0));
+        btnAnterior.setOpaque(false);
+        btnAnterior.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnAnterior.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnListadoActionPerformed(evt);
+                btnAnteriorActionPerformed(evt);
             }
         });
-        jToolBar2.add(btnListado);
+        jToolBar2.add(btnAnterior);
 
-        btnListado1.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        btnListado1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/lista.png"))); // NOI18N
-        btnListado1.setText("Año actual");
-        btnListado1.setFocusable(false);
-        btnListado1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnListado1.setMaximumSize(new java.awt.Dimension(150, 70));
-        btnListado1.setMinimumSize(new java.awt.Dimension(150, 0));
-        btnListado1.setOpaque(false);
-        btnListado1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btnListado1.addActionListener(new java.awt.event.ActionListener() {
+        btnActual.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        btnActual.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/lista.png"))); // NOI18N
+        btnActual.setText("Año actual");
+        btnActual.setFocusable(false);
+        btnActual.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnActual.setMaximumSize(new java.awt.Dimension(150, 70));
+        btnActual.setMinimumSize(new java.awt.Dimension(150, 0));
+        btnActual.setOpaque(false);
+        btnActual.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnActual.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnListado1ActionPerformed(evt);
+                btnActualActionPerformed(evt);
             }
         });
-        jToolBar2.add(btnListado1);
+        jToolBar2.add(btnActual);
 
-        btnNuevo1.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        btnNuevo1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/generales.png"))); // NOI18N
-        btnNuevo1.setText("Datos generales");
-        btnNuevo1.setFocusable(false);
-        btnNuevo1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnNuevo1.setMaximumSize(new java.awt.Dimension(150, 70));
-        btnNuevo1.setMinimumSize(new java.awt.Dimension(150, 0));
-        btnNuevo1.setOpaque(false);
-        btnNuevo1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btnNuevo1.addActionListener(new java.awt.event.ActionListener() {
+        btnGenerales.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        btnGenerales.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/generales.png"))); // NOI18N
+        btnGenerales.setText("Datos generales");
+        btnGenerales.setFocusable(false);
+        btnGenerales.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnGenerales.setMaximumSize(new java.awt.Dimension(150, 70));
+        btnGenerales.setMinimumSize(new java.awt.Dimension(150, 0));
+        btnGenerales.setOpaque(false);
+        btnGenerales.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnGenerales.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnNuevo1ActionPerformed(evt);
+                btnGeneralesActionPerformed(evt);
             }
         });
-        jToolBar2.add(btnNuevo1);
+        jToolBar2.add(btnGenerales);
 
         jSplitPane1.setLeftComponent(jToolBar2);
 
@@ -383,8 +431,10 @@ public class Principal extends javax.swing.JFrame {
         txtDocumento.setUpperCase(true);
         txtDocumento.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
+        txtPersonas.setDefaultText("1");
         txtPersonas.setOnlyDigits(true);
         txtPersonas.setUpperCase(true);
+        txtPersonas.setDefaultTextOnLostFocusIfNull(true);
         txtPersonas.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
         jButton3.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
@@ -418,11 +468,6 @@ public class Principal extends javax.swing.JFrame {
                 rbAnteriorItemStateChanged(evt);
             }
         });
-        rbAnterior.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                rbAnteriorStateChanged(evt);
-            }
-        });
 
         bgTipo.add(rbActual);
         rbActual.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
@@ -431,11 +476,6 @@ public class Principal extends javax.swing.JFrame {
         rbActual.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 rbActualItemStateChanged(evt);
-            }
-        });
-        rbActual.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                rbActualStateChanged(evt);
             }
         });
 
@@ -753,20 +793,6 @@ public class Principal extends javax.swing.JFrame {
         });
         jToolBar1.add(jButton1);
 
-        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/cerrar.png"))); // NOI18N
-        jButton2.setText("Cerrar");
-        jButton2.setFocusable(false);
-        jButton2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton2.setMaximumSize(new java.awt.Dimension(120, 41));
-        jButton2.setOpaque(false);
-        jButton2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(jButton2);
-
         jButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/informacion.png"))); // NOI18N
         jButton4.setText("Acerca de...");
         jButton4.setFocusable(false);
@@ -780,6 +806,21 @@ public class Principal extends javax.swing.JFrame {
             }
         });
         jToolBar1.add(jButton4);
+        jToolBar1.add(jSeparator1);
+
+        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/cerrar.png"))); // NOI18N
+        jButton2.setText("Cerrar");
+        jButton2.setFocusable(false);
+        jButton2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton2.setMaximumSize(new java.awt.Dimension(120, 41));
+        jButton2.setOpaque(false);
+        jButton2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(jButton2);
 
         jPanel1.add(jToolBar1, java.awt.BorderLayout.PAGE_START);
 
@@ -797,29 +838,25 @@ public class Principal extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnListadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnListadoActionPerformed
-        contenedor.setSelectedIndex(1);
-    }//GEN-LAST:event_btnListadoActionPerformed
+    private void btnAnteriorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnteriorActionPerformed
+        btnAnteriorHandler();
+    }//GEN-LAST:event_btnAnteriorActionPerformed
 
-    private void btnListado1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnListado1ActionPerformed
-        contenedor.setSelectedIndex(2);
-    }//GEN-LAST:event_btnListado1ActionPerformed
+    private void btnActualActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualActionPerformed
+        btnActualHandler();
+    }//GEN-LAST:event_btnActualActionPerformed
 
-    private void btnNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevoActionPerformed
-        contenedor.setSelectedIndex(0);
-    }//GEN-LAST:event_btnNuevoActionPerformed
+    private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
+        btnAgregarHandler();
+    }//GEN-LAST:event_btnAgregarActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         agregar();
     }//GEN-LAST:event_jButton3ActionPerformed
 
-    private void rbActualStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_rbActualStateChanged
-//        controlOpciones(evt, Principal.ACTUAL);
-    }//GEN-LAST:event_rbActualStateChanged
-
-    private void btnNuevo1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevo1ActionPerformed
-        contenedor.setSelectedIndex(3);
-    }//GEN-LAST:event_btnNuevo1ActionPerformed
+    private void btnGeneralesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGeneralesActionPerformed
+        btnGeneralesHandler();
+    }//GEN-LAST:event_btnGeneralesActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         exportar();
@@ -845,21 +882,11 @@ public class Principal extends javax.swing.JFrame {
         eliminarArea();
     }//GEN-LAST:event_jLabel11MouseClicked
 
-    private void rbAnteriorStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_rbAnteriorStateChanged
-//        controlOpciones(evt, Principal.ANTERIOR);
-    }//GEN-LAST:event_rbAnteriorStateChanged
-
     private void rbAnteriorItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_rbAnteriorItemStateChanged
         if (evt.getStateChange() == ItemEvent.SELECTED) {
             controlOpciones(Principal.ANTERIOR);
         }
     }//GEN-LAST:event_rbAnteriorItemStateChanged
-
-    private void rbActualItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_rbActualItemStateChanged
-        if (evt.getStateChange() == ItemEvent.SELECTED) {
-            controlOpciones(Principal.ACTUAL);
-        }
-    }//GEN-LAST:event_rbActualItemStateChanged
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         this.dispose();
@@ -868,6 +895,12 @@ public class Principal extends javax.swing.JFrame {
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         new AcercaDe();
     }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void rbActualItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_rbActualItemStateChanged
+        if (evt.getStateChange() == ItemEvent.SELECTED) {
+            controlOpciones(Principal.ACTUAL);
+        }
+    }//GEN-LAST:event_rbActualItemStateChanged
 
     /**
      * @param args the command line arguments
@@ -909,10 +942,10 @@ public class Principal extends javax.swing.JFrame {
     private org.aguilar.swinglib.swing.fl.FlTable actual;
     private org.aguilar.swinglib.swing.fl.FlTable anterior;
     private javax.swing.ButtonGroup bgTipo;
-    private javax.swing.JButton btnListado;
-    private javax.swing.JButton btnListado1;
-    private javax.swing.JButton btnNuevo;
-    private javax.swing.JButton btnNuevo1;
+    private javax.swing.JButton btnActual;
+    private javax.swing.JButton btnAgregar;
+    private javax.swing.JButton btnAnterior;
+    private javax.swing.JButton btnGenerales;
     private javax.swing.JComboBox<String> cbMesFin;
     private javax.swing.JComboBox<String> cbMesInicio;
     private org.aguilar.swinglib.swing.fl.FlComboBox cbTipo;
@@ -945,6 +978,7 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JToolBar jToolBar2;
