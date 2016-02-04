@@ -4,3 +4,4 @@ build.xml
 manifest.mf
 /build/
 informe.xml
+*.icc

@@ -20,7 +20,6 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import org.w3c.dom.Attr;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -32,25 +31,24 @@ import org.w3c.dom.Element;
 public class GeneraXml {
     
     private static final String NODO_RAIZ = "informe";
+    private static final String EXTENSION = ".icc";
+    private static final String XMLNS = "http://www.cnbv.gob.mx/recepcion/icc";
+    private static final String XMLNS_XSI = "http://www.w3.org/2001/XMLSchema-instance";
+    private static final String XSI_SCHEMALOCATION = "http://www.cnbv.gob.mx/recepcion/icc icc.xsd";
+    
     
     public GeneraXml(String rutaArchivo, String organoSupervisor, String sujetoObligado, String periodoReportar, ArrayList<Map> actual, ArrayList<Map> anterior) throws ParserConfigurationException, TransformerConfigurationException, TransformerException{
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setNamespaceAware(true);
         DocumentBuilder builder = factory.newDocumentBuilder();
         DOMImplementation implementation = builder.getDOMImplementation();
-        Document document = implementation.createDocument("http://www.cnbv.gob.mx/recepcion/icc", NODO_RAIZ, null);
+        Document document = implementation.createDocument(XMLNS, NODO_RAIZ, null);
         document.setXmlVersion("1.0");
         document.setXmlStandalone(true);
-        factory.setNamespaceAware(true);
 
         Element informe = document.getDocumentElement();
-
-        Attr xmlns_xsi = document.createAttribute("xmlns:xsi");
-        xmlns_xsi.setValue("http://www.w3.org/2001/XMLSchema-instance");
-        informe.setAttributeNode(xmlns_xsi);
-          
-        Attr xsi_schemaLocation = document.createAttribute("xsi:schemaLocation");
-        xsi_schemaLocation.setValue("http://www.cnbv.gob.mx/recepcion/icc icc.xsd");
-        informe.setAttributeNode(xsi_schemaLocation);
+        informe.setAttribute("xmlns:xsi",XMLNS_XSI);
+        informe.setAttribute("xsi:schemaLocation", XSI_SCHEMALOCATION);
 
         Element organo = document.createElement("clave_organo_regulador");
         organo.setTextContent(organoSupervisor);
@@ -142,7 +140,7 @@ public class GeneraXml {
             datos_capacitacion.appendChild(capacitacion_ano_anterior); 
         }
         Source source = new DOMSource(document);
-        Result result = new StreamResult(new java.io.File(rutaArchivo));
+        Result result = new StreamResult(new java.io.File(rutaArchivo + EXTENSION));
         Transformer transformer = TransformerFactory.newInstance().newTransformer();
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
         transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
@@ -150,8 +148,8 @@ public class GeneraXml {
     }
     
     public static void main(String[] args) throws ParserConfigurationException, TransformerException{
-        ArrayList<Map> actuales = new ArrayList<Map>();
-        ArrayList<Map> anteriores = new ArrayList<Map>();
+        ArrayList<Map> actuales = new ArrayList<>();
+        ArrayList<Map> anteriores = new ArrayList<>();
         Map reg;
         
         for (int x = 0; x<3; x++){
@@ -179,7 +177,7 @@ public class GeneraXml {
         System.out.println(actuales.size());
         System.out.println(actuales);
         
-        GeneraXml gen = new GeneraXml("informe","01-002","89-123","2015", actuales, anteriores );
+        GeneraXml gen = new GeneraXml("informitz","01-002","89-123","2015", actuales, anteriores );
     }
     
 }
