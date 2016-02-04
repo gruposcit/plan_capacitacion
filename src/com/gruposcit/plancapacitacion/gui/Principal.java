@@ -6,6 +6,11 @@
 
 package com.gruposcit.plancapacitacion.gui;
 
+import java.util.ArrayList;
+import java.util.Map;
+import org.aguilar.swinglib.utils.EasyEntry;
+import org.aguilar.swinglib.utils.EasyMap;
+
 /**
  *
  * @author leofavio_ar
@@ -15,6 +20,40 @@ public class Principal extends javax.swing.JFrame {
     /** Creates new form Principal2 */
     public Principal() {
         initComponents();
+        llenarTipos();
+        this.setLocationRelativeTo(null);
+        this.setVisible(true);
+    }
+    private void llenarTipos() {
+        ArrayList<Map> al = new ArrayList<>();
+        al.add(EasyMap.crearMap(
+                new EasyEntry("id", "01"), new EasyEntry("valor", "Curso")
+        ));
+        al.add(EasyMap.crearMap(
+                new EasyEntry("id", "02"), new EasyEntry("valor", "Seminario")
+        ));
+        al.add(EasyMap.crearMap(
+                new EasyEntry("id", "03"), new EasyEntry("valor", "Diplomado")
+        ));
+        al.add(EasyMap.crearMap(
+                new EasyEntry("id", "04"), new EasyEntry("valor", "Taller")
+        ));
+        al.add(EasyMap.crearMap(
+                new EasyEntry("id", "05"), new EasyEntry("valor", "Conferencias")
+        ));
+        al.add(EasyMap.crearMap(
+                new EasyEntry("id", "06"), new EasyEntry("valor", "Foros")
+        ));
+        al.add(EasyMap.crearMap(
+                new EasyEntry("id", "07"), new EasyEntry("valor", "Especialidades")
+        ));
+        al.add(EasyMap.crearMap(
+                new EasyEntry("id", "08"), new EasyEntry("valor", "Maestrías")
+        ));
+        al.add(EasyMap.crearMap(
+                new EasyEntry("id", "09"), new EasyEntry("valor", "Cursos en Línea")
+        ));
+        cbTipo.setDataProvider(al, "valor");
     }
 
     /** This method is called from within the constructor to
@@ -26,6 +65,7 @@ public class Principal extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        bgTipo = new javax.swing.ButtonGroup();
         jPanel1 = new javax.swing.JPanel();
         jSplitPane1 = new javax.swing.JSplitPane();
         jToolBar2 = new javax.swing.JToolBar();
@@ -42,6 +82,10 @@ public class Principal extends javax.swing.JFrame {
         jScrollPane3 = new javax.swing.JScrollPane();
         anterior1 = new org.aguilar.swinglib.swing.fl.FlTable();
         jPanel3 = new javax.swing.JPanel();
+        jRadioButton1 = new javax.swing.JRadioButton();
+        jRadioButton2 = new javax.swing.JRadioButton();
+        jLabel3 = new javax.swing.JLabel();
+        cbTipo = new org.aguilar.swinglib.swing.fl.FlComboBox();
         jToolBar1 = new javax.swing.JToolBar();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
@@ -177,15 +221,51 @@ public class Principal extends javax.swing.JFrame {
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
 
+        bgTipo.add(jRadioButton1);
+        jRadioButton1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jRadioButton1.setSelected(true);
+        jRadioButton1.setText("Año anterior");
+        jRadioButton1.setOpaque(false);
+
+        bgTipo.add(jRadioButton2);
+        jRadioButton2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jRadioButton2.setText("Año actual");
+        jRadioButton2.setOpaque(false);
+
+        jLabel3.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLabel3.setText("Tipo de capacitación:");
+
+        cbTipo.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 719, Short.MAX_VALUE)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(jRadioButton1)
+                        .addGap(18, 18, 18)
+                        .addComponent(jRadioButton2))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cbTipo, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(392, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 513, Short.MAX_VALUE)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jRadioButton1)
+                    .addComponent(jRadioButton2))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(cbTipo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(444, Short.MAX_VALUE))
         );
 
         contenedor.addTab("nuevo", jPanel3);
@@ -220,7 +300,7 @@ public class Principal extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 566, Short.MAX_VALUE)
         );
 
         pack();
@@ -277,18 +357,23 @@ public class Principal extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private org.aguilar.swinglib.swing.fl.FlTable anterior;
     private org.aguilar.swinglib.swing.fl.FlTable anterior1;
+    private javax.swing.ButtonGroup bgTipo;
     private javax.swing.JButton btnListado;
     private javax.swing.JButton btnListado1;
     private javax.swing.JButton btnNuevo;
+    private org.aguilar.swinglib.swing.fl.FlComboBox cbTipo;
     private javax.swing.JTabbedPane contenedor;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JRadioButton jRadioButton1;
+    private javax.swing.JRadioButton jRadioButton2;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JSplitPane jSplitPane1;
