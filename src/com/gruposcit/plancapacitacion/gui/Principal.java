@@ -13,6 +13,9 @@ import java.awt.event.ItemEvent;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -174,15 +177,42 @@ public class Principal extends javax.swing.JFrame {
         txtDocumento.setText("");
     }
     private void exportar() {
+        if (anterior.getRowCount() == 0) {
+            FlDialog.showFullWarningDialog("Debe agregar por lo menos un registro del año anterior...");
+            return;
+        }
+        if (actual.getRowCount() == 0) {
+            FlDialog.showFullWarningDialog("Debe agregar por lo menos un registro para año actual...");
+            return;
+        }
+        if (txtOrgano.getText().trim().equals("")) {
+            FlDialog.showFullWarningDialog("Debe escribir la clave del órgano regulador...");
+            return;
+        }
+        if (txtSujeto.getText().trim().equals("")) {
+            FlDialog.showFullWarningDialog("Debe escribir la clave del sujeto obligado...");
+            return;
+        }
         if (jfc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
             try {
+                String xml = jfc.getSelectedFile().getCanonicalPath();
                 new GeneraXml(
-                        jfc.getSelectedFile().getCanonicalPath(), 
+                        xml, 
                         txtOrgano.getText().trim(), 
                         txtSujeto.getText().trim(), 
                         String.valueOf(ycPeriodo.getYear()), 
                         (ArrayList<Map>)actual.getDataProvider(), 
                         (ArrayList<Map>)anterior.getDataProvider());
+                if (chkValidar.isSelected()) {
+                    boolean b = GeneraXml.validarXMLSchema(GeneraXml.obtenerRutaAplicacion() + System.getProperty("file.separator") + "ICC.xsd", xml + ".icc");
+                    if (b) {
+                        FlDialog.showInformationDialog(null, "El archivo SÍ es válido conforme a la estructura necesaria para reportar.");
+                    } else {
+                        FlDialog.showWarningDialog(null, "El archivo NO cuenta con la estructura necesaria para reportar.");
+                    }
+                }
+                escribirExportado(xml + ".icc");
+                btnTextoHandler();
                 FlDialog.showFullInformationDialog("Se ha exportado correctamente el archivo.");
             } catch (IOException | ParserConfigurationException | TransformerException ex) {
                 FlDialog.showFullErrorDialog("Ha ocurrido un error al exportar el archivo.");
@@ -190,10 +220,38 @@ public class Principal extends javax.swing.JFrame {
             }
         }
     }
+    private void escribirExportado(String rutaArchivo) {
+        BufferedReader br = null;
+        try {
+            br = new BufferedReader(new FileReader(rutaArchivo));
+            try {
+                StringBuilder sb = new StringBuilder();
+                String line = br.readLine();
+                while (line != null) {
+                    sb.append(line);
+                    sb.append(System.lineSeparator());
+                    line = br.readLine();
+                }
+                txtTexto.setText(sb.toString());
+            } finally {
+                br.close();
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                br.close();
+            } catch (IOException ex) {
+                Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
     private void agregarArea() {
-        ((DefaultListModel)liAreas.getModel()).addElement(txtAreas.getText().trim());
-        txtAreas.setText("");
-        txtAreas.requestFocusInWindow();
+        if (!txtAreas.getText().equals("")) {
+            ((DefaultListModel)liAreas.getModel()).addElement(txtAreas.getText().trim());
+            txtAreas.setText("");
+            txtAreas.requestFocusInWindow();
+        }
     }
     private void eliminarArea() {
         ((DefaultListModel)liAreas.getModel()).removeElementAt(liAreas.getSelectedIndex());
@@ -232,6 +290,7 @@ public class Principal extends javax.swing.JFrame {
         btnActual.setSelected(true);
         btnAgregar.setSelected(false);
         btnGenerales.setSelected(false);
+        btnTexto.setSelected(false);
     }
     private void btnAgregarHandler() {
         contenedor.setSelectedIndex(0);
@@ -239,6 +298,7 @@ public class Principal extends javax.swing.JFrame {
         btnActual.setSelected(false);
         btnAgregar.setSelected(true);
         btnGenerales.setSelected(false);
+        btnTexto.setSelected(false);
     }
     private void btnGeneralesHandler() {
         contenedor.setSelectedIndex(3);
@@ -246,6 +306,15 @@ public class Principal extends javax.swing.JFrame {
         btnActual.setSelected(false);
         btnAgregar.setSelected(false);
         btnGenerales.setSelected(true);
+        btnTexto.setSelected(false);
+    }
+    private void btnTextoHandler() {
+        contenedor.setSelectedIndex(4);
+        btnAnterior.setSelected(false);
+        btnActual.setSelected(false);
+        btnAgregar.setSelected(false);
+        btnGenerales.setSelected(false);
+        btnTexto.setSelected(true);
     }
     private void limpiarInformacion() {
         limpiar();
@@ -270,6 +339,7 @@ public class Principal extends javax.swing.JFrame {
         btnAnterior = new javax.swing.JButton();
         btnActual = new javax.swing.JButton();
         btnGenerales = new javax.swing.JButton();
+        btnTexto = new javax.swing.JButton();
         contenedor = new javax.swing.JTabbedPane();
         jPanel3 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
@@ -312,8 +382,13 @@ public class Principal extends javax.swing.JFrame {
         txtSujeto = new org.aguilar.swinglib.swing.fl.FlStringField();
         jLabel22 = new javax.swing.JLabel();
         ycPeriodo = new com.toedter.calendar.JYearChooser();
+        jPanel7 = new javax.swing.JPanel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        txtTexto = new javax.swing.JTextArea();
         jToolBar1 = new javax.swing.JToolBar();
         jButton1 = new javax.swing.JButton();
+        chkValidar = new javax.swing.JCheckBox();
+        jSeparator2 = new javax.swing.JToolBar.Separator();
         jButton5 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JToolBar.Separator();
@@ -396,6 +471,22 @@ public class Principal extends javax.swing.JFrame {
             }
         });
         jToolBar2.add(btnGenerales);
+
+        btnTexto.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        btnTexto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/texto.png"))); // NOI18N
+        btnTexto.setText("Ver último exportado");
+        btnTexto.setFocusable(false);
+        btnTexto.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnTexto.setMaximumSize(new java.awt.Dimension(150, 70));
+        btnTexto.setMinimumSize(new java.awt.Dimension(150, 0));
+        btnTexto.setOpaque(false);
+        btnTexto.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnTexto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTextoActionPerformed(evt);
+            }
+        });
+        jToolBar2.add(btnTexto);
 
         jSplitPane1.setLeftComponent(jToolBar2);
 
@@ -786,6 +877,32 @@ public class Principal extends javax.swing.JFrame {
 
         contenedor.addTab("generales", jPanel6);
 
+        jPanel7.setBackground(new java.awt.Color(255, 255, 255));
+
+        txtTexto.setColumns(20);
+        txtTexto.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
+        txtTexto.setRows(5);
+        jScrollPane4.setViewportView(txtTexto);
+
+        javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
+        jPanel7.setLayout(jPanel7Layout);
+        jPanel7Layout.setHorizontalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 711, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jPanel7Layout.setVerticalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 504, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        contenedor.addTab("texto", jPanel7);
+
         jSplitPane1.setRightComponent(contenedor);
 
         jPanel1.add(jSplitPane1, java.awt.BorderLayout.CENTER);
@@ -806,6 +923,13 @@ public class Principal extends javax.swing.JFrame {
             }
         });
         jToolBar1.add(jButton1);
+
+        chkValidar.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        chkValidar.setSelected(true);
+        chkValidar.setText("Validar archivo al exportar");
+        chkValidar.setFocusable(false);
+        jToolBar1.add(chkValidar);
+        jToolBar1.add(jSeparator2);
 
         jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/borrar.png"))); // NOI18N
         jButton5.setText("Limpiar información");
@@ -934,6 +1058,10 @@ public class Principal extends javax.swing.JFrame {
         limpiarInformacion();
     }//GEN-LAST:event_jButton5ActionPerformed
 
+    private void btnTextoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTextoActionPerformed
+        btnTextoHandler();
+    }//GEN-LAST:event_btnTextoActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -961,6 +1089,12 @@ public class Principal extends javax.swing.JFrame {
         }
         //</editor-fold>
         //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -978,9 +1112,11 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JButton btnAgregar;
     private javax.swing.JButton btnAnterior;
     private javax.swing.JButton btnGenerales;
+    private javax.swing.JButton btnTexto;
     private javax.swing.JComboBox<String> cbMesFin;
     private javax.swing.JComboBox<String> cbMesInicio;
     private org.aguilar.swinglib.swing.fl.FlComboBox cbTipo;
+    private javax.swing.JCheckBox chkValidar;
     private javax.swing.JTabbedPane contenedor;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
@@ -1008,10 +1144,13 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JToolBar.Separator jSeparator1;
+    private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JToolBar jToolBar2;
@@ -1024,6 +1163,7 @@ public class Principal extends javax.swing.JFrame {
     private org.aguilar.swinglib.swing.fl.FlStringField txtOrgano;
     private org.aguilar.swinglib.swing.fl.FlStringField txtPersonas;
     private org.aguilar.swinglib.swing.fl.FlStringField txtSujeto;
+    private javax.swing.JTextArea txtTexto;
     private com.toedter.calendar.JYearChooser ycAnoFin;
     private com.toedter.calendar.JYearChooser ycAnoInicio;
     private com.toedter.calendar.JYearChooser ycPeriodo;

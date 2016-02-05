@@ -5,9 +5,16 @@
  */
 package com.gruposcit.plancapacitacion.utils;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -20,9 +27,14 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 /**
  *
@@ -145,6 +157,32 @@ public class GeneraXml {
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
         transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
         transformer.transform(source, result);
+    }
+    public static boolean validarXMLSchema(String xsdPath, String xmlPath){
+        try {
+            SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            Schema schema = factory.newSchema(new File(xsdPath));
+            Validator validator = schema.newValidator();
+            validator.validate(new StreamSource(new File(xmlPath)));
+        } catch (IOException | SAXException e) {
+            System.out.println("Exception: " + e.getMessage());
+            return false;
+        }
+        return true;
+    }
+    public static String obtenerRutaAplicacion() {
+        final Class<?> referenceClass = GeneraXml.class;
+        final URL url = referenceClass.getProtectionDomain().getCodeSource().getLocation();
+        try {
+            final java.io.File jarPath = new java.io.File(url.toURI()).getParentFile();
+            System.out.println(jarPath.getCanonicalPath());
+            return jarPath.getCanonicalPath();
+        } catch (IOException ex) {
+            Logger.getLogger(GeneraXml.class.getName()).log(Level.SEVERE, null, ex);
+        } catch(URISyntaxException ex){
+            
+        }
+        return "";
     }
     
     public static void main(String[] args) throws ParserConfigurationException, TransformerException{
