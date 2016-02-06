@@ -31,25 +31,99 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
+import org.aguilar.swinglib.utils.EasyEntry;
+import org.aguilar.swinglib.utils.EasyMap;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
  *
  * @author SISTEMAS
  */
-public class GeneraXml {
+public class ICC {
     
     private static final String NODO_RAIZ = "informe";
-    private static final String EXTENSION = ".icc";
+    public static final String EXTENSION = ".icc";
     private static final String XMLNS = "http://www.cnbv.gob.mx/recepcion/icc";
     private static final String XMLNS_XSI = "http://www.w3.org/2001/XMLSchema-instance";
     private static final String XSI_SCHEMALOCATION = "http://www.cnbv.gob.mx/recepcion/icc icc.xsd";
+     
     
-    
-    public GeneraXml(String rutaArchivo, String organoSupervisor, String sujetoObligado, String periodoReportar, ArrayList<Map> actual, ArrayList<Map> anterior) throws ParserConfigurationException, TransformerConfigurationException, TransformerException{
+    public Modelo importar(String rutaArchivo) throws ParserConfigurationException, SAXException, IOException {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document doc = builder.parse(new File(rutaArchivo));
+        doc.getDocumentElement().normalize();
+        ICC.Modelo modelo = new ICC.Modelo();
+        modelo.setOrganoSupervisor(doc.getElementsByTagName("clave_organo_regulador").item(0).getTextContent());
+        modelo.setSujetoObligado(doc.getElementsByTagName("clave_sujeto_obligado").item(0).getTextContent());
+        modelo.setPeriodoReportar(doc.getElementsByTagName("periodo_informado").item(0).getTextContent());
+        NodeList actual = doc.getElementsByTagName("cursos_programados");
+        NodeList anterior = doc.getElementsByTagName("cursos_efectuados");
+        ArrayList<Map> alActual = new ArrayList<>();
+        ArrayList<Map> alAnterior = new ArrayList<>();
+        for (int i = 0; i < actual.getLength(); i ++) {
+            Node nodo = actual.item(i);
+            NodeList hijos = nodo.getChildNodes();
+            EasyEntry tipo = null, nombre = null, feini = null, fefin = null, areas = null, numper = null;
+            for (int j = 0; j < hijos.getLength(); j ++) {
+                if (hijos.item(j).getNodeType() == Node.ELEMENT_NODE) {
+                    switch (hijos.item(j).getNodeName()) {
+                        case "tipo_capacitacion":
+                            tipo = new EasyEntry("tipo", hijos.item(j).getTextContent()); break;
+                        case "nombre_capacitacion":
+                            nombre = new EasyEntry("nombre", hijos.item(j).getTextContent()); break;
+                        case "fecha_inicio_imparticion":
+                            feini = new EasyEntry("feini", hijos.item(j).getTextContent()); break;
+                        case "fecha_fin_imparticion":
+                            fefin = new EasyEntry("fefin", hijos.item(j).getTextContent()); break;
+                        case "areas_capacitacion":
+                            areas = new EasyEntry("areas", hijos.item(j).getTextContent()); break;
+                        case "total_personas":
+                            numper = new EasyEntry("num_per", hijos.item(j).getTextContent()); break;
+                    }
+                }
+            }
+            alActual.add(EasyMap.crearMap(tipo, nombre, feini, fefin, areas, numper));
+        }
+        modelo.setActual(alActual);
+        for (int i = 0; i < anterior.getLength(); i ++) {
+            Node nodo = anterior.item(i);
+            NodeList hijos = nodo.getChildNodes();
+            EasyEntry tipo = null, nombre = null, feini = null, fefin = null, areas = null, numper = null, documento = null;
+            for (int j = 0; j < hijos.getLength(); j ++) {
+                if (hijos.item(j).getNodeType() == Node.ELEMENT_NODE) {
+                    switch (hijos.item(j).getNodeName()) {
+                        case "tipo_capacitacion":
+                            tipo = new EasyEntry("tipo", hijos.item(j).getTextContent()); break;
+                        case "nombre_capacitacion":
+                            nombre = new EasyEntry("nombre", hijos.item(j).getTextContent()); break;
+                        case "fecha_inicio_imparticion":
+                            feini = new EasyEntry("feini", hijos.item(j).getTextContent()); break;
+                        case "fecha_fin_imparticion":
+                            fefin = new EasyEntry("fefin", hijos.item(j).getTextContent()); break;
+                        case "areas_capacitadas":
+                            areas = new EasyEntry("areas", hijos.item(j).getTextContent()); break;
+                        case "total_personas_capacitadas":
+                            numper = new EasyEntry("num_per", hijos.item(j).getTextContent()); break;
+                        case "documento_emitido":
+                            documento = new EasyEntry("documento", hijos.item(j).getTextContent()); break;
+                    }
+                }
+            }
+            alAnterior.add(EasyMap.crearMap(tipo, nombre, feini, fefin, areas, numper, documento));
+        }
+        modelo.setAnterior(alAnterior);
+        return modelo;
+    }
+    public void exportar(String rutaArchivo, ICC.Modelo modelo) throws ParserConfigurationException, TransformerException {
+        exportar(rutaArchivo, modelo.getOrganoSupervisor(), modelo.getSujetoObligado(), modelo.getPeriodoReportar(), modelo.actual, modelo.anterior);
+    }
+    public void exportar(String rutaArchivo, String organoSupervisor, String sujetoObligado, String periodoReportar, ArrayList<Map> actual, ArrayList<Map> anterior) throws ParserConfigurationException, TransformerConfigurationException, TransformerException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         DocumentBuilder builder = factory.newDocumentBuilder();
@@ -171,18 +245,66 @@ public class GeneraXml {
         return true;
     }
     public static String obtenerRutaAplicacion() {
-        final Class<?> referenceClass = GeneraXml.class;
+        final Class<?> referenceClass = ICC.class;
         final URL url = referenceClass.getProtectionDomain().getCodeSource().getLocation();
         try {
             final java.io.File jarPath = new java.io.File(url.toURI()).getParentFile();
             System.out.println(jarPath.getCanonicalPath());
             return jarPath.getCanonicalPath();
         } catch (IOException ex) {
-            Logger.getLogger(GeneraXml.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ICC.class.getName()).log(Level.SEVERE, null, ex);
         } catch(URISyntaxException ex){
             
         }
         return "";
+    }
+    public class Modelo {
+        String organoSupervisor;
+        String sujetoObligado;
+        String periodoReportar;
+        ArrayList<Map> actual;
+        ArrayList<Map> anterior;
+        
+        public Modelo() {
+            
+        }
+        public Modelo(String organoSupervisor, String sujetoObligado, String periodoReportar, ArrayList<Map> actual, ArrayList<Map> anterior) {
+            this.organoSupervisor = organoSupervisor;
+            this.sujetoObligado = sujetoObligado;
+            this.periodoReportar = periodoReportar;
+            this.actual = actual;
+            this.anterior = anterior;
+        }
+        public String getOrganoSupervisor() {
+            return organoSupervisor;
+        }
+        public void setOrganoSupervisor(String organoSupervisor) {
+            this.organoSupervisor = organoSupervisor;
+        }
+        public String getSujetoObligado() {
+            return sujetoObligado;
+        }
+        public void setSujetoObligado(String sujetoObligado) {
+            this.sujetoObligado = sujetoObligado;
+        }
+        public String getPeriodoReportar() {
+            return periodoReportar;
+        }
+        public void setPeriodoReportar(String periodoReportar) {
+            this.periodoReportar = periodoReportar;
+        }
+        public ArrayList<Map> getActual() {
+            return actual;
+        }
+        public void setActual(ArrayList<Map> actual) {
+            this.actual = actual;
+        }
+        public ArrayList<Map> getAnterior() {
+            return anterior;
+        }
+        public void setAnterior(ArrayList<Map> anterior) {
+            this.anterior = anterior;
+        }
     }
     
     public static void main(String[] args) throws ParserConfigurationException, TransformerException{
@@ -214,8 +336,7 @@ public class GeneraXml {
         }
         System.out.println(actuales.size());
         System.out.println(actuales);
-        
-        GeneraXml gen = new GeneraXml("informitz","01-002","89-123","2015", actuales, anteriores );
+//        ICC.exportar("informe", new ICC.Modelo("01-002","89-123","2015", actuales, anteriores));
     }
     
 }

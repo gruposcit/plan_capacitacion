@@ -6,7 +6,7 @@
 
 package com.gruposcit.plancapacitacion.gui;
 
-import com.gruposcit.plancapacitacion.utils.GeneraXml;
+import com.gruposcit.plancapacitacion.utils.ICC;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.ItemEvent;
@@ -14,7 +14,7 @@ import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,6 +33,7 @@ import org.aguilar.swinglib.swing.renderers.MultiLineCellRenderer;
 import org.aguilar.swinglib.utils.EasyEntry;
 import org.aguilar.swinglib.utils.EasyMap;
 import org.aguilar.swinglib.utils.MultipleFileFilter;
+import org.xml.sax.SAXException;
 
 /**
  *
@@ -44,16 +45,18 @@ public class Principal extends javax.swing.JFrame {
     private MultipleFileFilter fileFilter = new MultipleFileFilter("Archivo .icc", "icc");
     private static final int ACTUAL = 0;
     private static final int ANTERIOR = 1;
+    private ICC icc;
     
     /** Creates new form Principal */
     public Principal() {
         initComponents();
         llenarTipos();
-        inicializarActual();
-        inicializarAnterior();
-        this.setTitle("Herramienta para generar archivo de cursos de capacitación");
+        inicializarActual(new ArrayList<>());
+        inicializarAnterior(new ArrayList<>());
+        this.setTitle("Editor de archivo de cursos de capacitación - Grupo SCIT v1.0");
         this.setIconImage(new ImageIcon(this.getClass().getResource("/img/gruposcit_logo.png")).getImage());
         jfc.setFileFilter(fileFilter);
+        icc = new ICC();
         contenedor.setUI(new BasicTabbedPaneUI() {
             @Override
             protected int calculateTabAreaHeight(int tabPlacement, int horizRunCount, int maxTabHeight) {
@@ -89,16 +92,16 @@ public class Principal extends javax.swing.JFrame {
     private void llenarAreas() {
         liAreas.setModel(new DefaultListModel());
     }
-    private void inicializarActual() {
+    private void inicializarActual(ArrayList<Map> datos) {
         actual.setDataProvider(
-                new ArrayList<Map>(), 
+                datos, 
                 new String[] {"tipo", "nombre", "feini", "fefin", "areas", "num_per"}, 
                 new String[] {"Tipo", "Nombre", "Fecha ini.", "Fecha fin.", "Áreas", "Núm. pers."});
         actual.setColumnCellRenderer(new MultiLineCellRenderer(), new int[] {1, 4});
     }
-    private void inicializarAnterior() {
+    private void inicializarAnterior(ArrayList<Map> datos) {
         anterior.setDataProvider(
-                new ArrayList<Map>(), 
+                datos, 
                 new String[] {"tipo", "nombre", "feini", "fefin", "areas", "num_per", "documento"}, 
                 new String[] {"Tipo", "Nombre", "Fecha ini.", "Fecha fin.", "Áreas", "Núm. pers.", "Documento"});
         anterior.setColumnCellRenderer(new MultiLineCellRenderer(), new int[] {1, 4});
@@ -196,7 +199,7 @@ public class Principal extends javax.swing.JFrame {
         if (jfc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
             try {
                 String xml = jfc.getSelectedFile().getCanonicalPath();
-                new GeneraXml(
+                icc.exportar(
                         xml, 
                         txtOrgano.getText().trim(), 
                         txtSujeto.getText().trim(), 
@@ -204,14 +207,19 @@ public class Principal extends javax.swing.JFrame {
                         (ArrayList<Map>)actual.getDataProvider(), 
                         (ArrayList<Map>)anterior.getDataProvider());
                 if (chkValidar.isSelected()) {
-                    boolean b = GeneraXml.validarXMLSchema(GeneraXml.obtenerRutaAplicacion() + System.getProperty("file.separator") + "ICC.xsd", xml + ".icc");
-                    if (b) {
-                        FlDialog.showInformationDialog(null, "El archivo SÍ es válido conforme a la estructura necesaria para reportar.");
+                    String xsd = ICC.obtenerRutaAplicacion() + System.getProperty("file.separator") + "ICC.xsd";
+                    if (new File(xsd).exists()) {
+                        boolean b = ICC.validarXMLSchema(xsd, xml + ICC.EXTENSION);
+                        if (b) {
+                            FlDialog.showInformationDialog(null, "El archivo SÍ es válido conforme a la estructura necesaria para reportar.");
+                        } else {
+                            FlDialog.showWarningDialog(null, "El archivo NO cuenta con la estructura necesaria para reportar.");
+                        }
                     } else {
-                        FlDialog.showWarningDialog(null, "El archivo NO cuenta con la estructura necesaria para reportar.");
+                        FlDialog.showFullErrorDialog("El archivo de definición de esquema ICC.xsd no existe.");
                     }
                 }
-                escribirExportado(xml + ".icc");
+                escribirExportado(xml + ICC.EXTENSION);
                 btnTextoHandler();
                 FlDialog.showFullInformationDialog("Se ha exportado correctamente el archivo.");
             } catch (IOException | ParserConfigurationException | TransformerException ex) {
@@ -220,7 +228,37 @@ public class Principal extends javax.swing.JFrame {
             }
         }
     }
+    private void importar() {
+        if (jfc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+            try {
+                String xsd = ICC.obtenerRutaAplicacion() + System.getProperty("file.separator") + "ICC.xsd";
+                if (new File(xsd).exists()) {
+                    String xml = jfc.getSelectedFile().getCanonicalPath();
+                    if (ICC.validarXMLSchema(xsd, xml)) {
+                        ICC.Modelo modelo = icc.importar(xml);
+                        txtOrgano.setText(modelo.getOrganoSupervisor());
+                        txtSujeto.setText(modelo.getSujetoObligado());
+                        ycPeriodo.setYear(Integer.valueOf(modelo.getPeriodoReportar()));
+                        inicializarActual(modelo.getActual());
+                        inicializarAnterior(modelo.getAnterior());
+                        FlDialog.showFullInformationDialog("El archivo se ha importado correctamente.");
+                    } else {
+                        FlDialog.showWarningDialog(null, "El archivo NO cuenta con la estructura necesaria para importarlo.");
+                    }
+                } else {
+                    FlDialog.showFullErrorDialog("El archivo de definición de esquema ICC.xsd no existe.");
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ParserConfigurationException ex) {
+                Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (SAXException ex) {
+                Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
     private void escribirExportado(String rutaArchivo) {
+        txtTexto.setText("");
         BufferedReader br = null;
         try {
             br = new BufferedReader(new FileReader(rutaArchivo));
@@ -318,8 +356,8 @@ public class Principal extends javax.swing.JFrame {
     }
     private void limpiarInformacion() {
         limpiar();
-        inicializarActual();
-        inicializarAnterior();
+        inicializarActual(new ArrayList<>());
+        inicializarAnterior(new ArrayList<>());
     }
 
     /** This method is called from within the constructor to
@@ -388,6 +426,7 @@ public class Principal extends javax.swing.JFrame {
         jToolBar1 = new javax.swing.JToolBar();
         jButton1 = new javax.swing.JButton();
         chkValidar = new javax.swing.JCheckBox();
+        jButton6 = new javax.swing.JButton();
         jSeparator2 = new javax.swing.JToolBar.Separator();
         jButton5 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
@@ -554,12 +593,8 @@ public class Principal extends javax.swing.JFrame {
         cbMesInicio.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         cbMesInicio.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione un mes...", "ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE" }));
 
-        ycAnoInicio.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-
         cbMesFin.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         cbMesFin.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione un mes...", "ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE" }));
-
-        ycAnoFin.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
         jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Período a reportar", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 11))); // NOI18N
         jPanel5.setOpaque(false);
@@ -832,8 +867,6 @@ public class Principal extends javax.swing.JFrame {
         jLabel22.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         jLabel22.setText("Período informado:");
 
-        ycPeriodo.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
@@ -879,6 +912,7 @@ public class Principal extends javax.swing.JFrame {
 
         jPanel7.setBackground(new java.awt.Color(255, 255, 255));
 
+        txtTexto.setEditable(false);
         txtTexto.setColumns(20);
         txtTexto.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
         txtTexto.setRows(5);
@@ -929,6 +963,20 @@ public class Principal extends javax.swing.JFrame {
         chkValidar.setText("Validar archivo al exportar");
         chkValidar.setFocusable(false);
         jToolBar1.add(chkValidar);
+
+        jButton6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/importar.png"))); // NOI18N
+        jButton6.setText("Importar archivo icc");
+        jButton6.setFocusable(false);
+        jButton6.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton6.setMaximumSize(new java.awt.Dimension(120, 41));
+        jButton6.setOpaque(false);
+        jButton6.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(jButton6);
         jToolBar1.add(jSeparator2);
 
         jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/borrar.png"))); // NOI18N
@@ -1062,6 +1110,10 @@ public class Principal extends javax.swing.JFrame {
         btnTextoHandler();
     }//GEN-LAST:event_btnTextoActionPerformed
 
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        importar();
+    }//GEN-LAST:event_jButton6ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1123,6 +1175,7 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
+    private javax.swing.JButton jButton6;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
