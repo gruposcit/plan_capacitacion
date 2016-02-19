@@ -53,10 +53,11 @@ public class Principal extends javax.swing.JFrame {
         llenarTipos();
         inicializarActual(new ArrayList<>());
         inicializarAnterior(new ArrayList<>());
-        this.setTitle("Editor de archivo de cursos de capacitación - Grupo SCIT v1.0");
+        this.setTitle("Editor de archivo de cursos de capacitación v1.0");
         this.setIconImage(new ImageIcon(this.getClass().getResource("/img/gruposcit_logo.png")).getImage());
         jfc.setFileFilter(fileFilter);
         icc = new ICC();
+        btnAcercade.setVisible(false);
         contenedor.setUI(new BasicTabbedPaneUI() {
             @Override
             protected int calculateTabAreaHeight(int tabPlacement, int horizRunCount, int maxTabHeight) {
@@ -427,9 +428,8 @@ public class Principal extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         chkValidar = new javax.swing.JCheckBox();
         jButton6 = new javax.swing.JButton();
-        jSeparator2 = new javax.swing.JToolBar.Separator();
         jButton5 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        btnAcercade = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JToolBar.Separator();
         jButton2 = new javax.swing.JButton();
 
@@ -593,8 +593,12 @@ public class Principal extends javax.swing.JFrame {
         cbMesInicio.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         cbMesInicio.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione un mes...", "ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE" }));
 
+        ycAnoInicio.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+
         cbMesFin.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         cbMesFin.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione un mes...", "ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE" }));
+
+        ycAnoFin.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
         jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Período a reportar", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 11))); // NOI18N
         jPanel5.setOpaque(false);
@@ -867,6 +871,8 @@ public class Principal extends javax.swing.JFrame {
         jLabel22.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         jLabel22.setText("Período informado:");
 
+        ycPeriodo.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
@@ -977,7 +983,6 @@ public class Principal extends javax.swing.JFrame {
             }
         });
         jToolBar1.add(jButton6);
-        jToolBar1.add(jSeparator2);
 
         jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/borrar.png"))); // NOI18N
         jButton5.setText("Limpiar información");
@@ -993,19 +998,19 @@ public class Principal extends javax.swing.JFrame {
         });
         jToolBar1.add(jButton5);
 
-        jButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/informacion.png"))); // NOI18N
-        jButton4.setText("Acerca de...");
-        jButton4.setFocusable(false);
-        jButton4.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton4.setMaximumSize(new java.awt.Dimension(120, 41));
-        jButton4.setOpaque(false);
-        jButton4.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
+        btnAcercade.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/informacion.png"))); // NOI18N
+        btnAcercade.setText("Acerca de...");
+        btnAcercade.setFocusable(false);
+        btnAcercade.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnAcercade.setMaximumSize(new java.awt.Dimension(120, 41));
+        btnAcercade.setOpaque(false);
+        btnAcercade.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnAcercade.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
+                btnAcercadeActionPerformed(evt);
             }
         });
-        jToolBar1.add(jButton4);
+        jToolBar1.add(btnAcercade);
         jToolBar1.add(jSeparator1);
 
         jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/cerrar.png"))); // NOI18N
@@ -1092,9 +1097,9 @@ public class Principal extends javax.swing.JFrame {
         System.exit(0);
     }//GEN-LAST:event_jButton2ActionPerformed
 
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+    private void btnAcercadeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAcercadeActionPerformed
         new AcercaDe();
-    }//GEN-LAST:event_jButton4ActionPerformed
+    }//GEN-LAST:event_btnAcercadeActionPerformed
 
     private void rbActualItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_rbActualItemStateChanged
         if (evt.getStateChange() == ItemEvent.SELECTED) {
@@ -1160,6 +1165,7 @@ public class Principal extends javax.swing.JFrame {
     private org.aguilar.swinglib.swing.fl.FlTable actual;
     private org.aguilar.swinglib.swing.fl.FlTable anterior;
     private javax.swing.ButtonGroup bgTipo;
+    private javax.swing.JButton btnAcercade;
     private javax.swing.JButton btnActual;
     private javax.swing.JButton btnAgregar;
     private javax.swing.JButton btnAnterior;
@@ -1173,7 +1179,6 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
     private javax.swing.JLabel jLabel1;
@@ -1203,7 +1208,6 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JToolBar.Separator jSeparator1;
-    private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JToolBar jToolBar2;
